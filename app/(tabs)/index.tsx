@@ -1,21 +1,19 @@
 import React, {useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+
 import {RootStackParamList} from '../../constants/Navegation';
+import { router, useRouter } from 'expo-router';
 
+export default function SplashScreen() {
+  
+  const router = useRouter();
 
-type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>;
-type Props = {
-    navigation: SplashScreenNavigationProp;
-};
-
-const SplashScreen: React.FC<Props> = ({ navigation }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigation.replace('Employees')
+            router.replace('/employee')
         }, 2000);
         return () => clearTimeout(timer);
-    }, [navigation]);
+    }, [router]);
 
     return(
         <View style={styles.container}>
@@ -38,4 +36,3 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SplashScreen;
