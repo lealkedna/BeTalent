@@ -4,16 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import {RootStackParamList} from '../../constants/Navegation';
 import { router, useRouter } from 'expo-router';
 
-export default function SplashScreen() {
-  
-  const router = useRouter();
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            router.replace('/employees')
-        }, 2000);
-        return () => clearTimeout(timer);
-    }, [router]);
+export default function Crud() {
 
     return(
         <View style={styles.container}>

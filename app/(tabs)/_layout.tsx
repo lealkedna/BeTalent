@@ -7,6 +7,9 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -34,10 +37,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="employees"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Funcionarios',
+          tabBarIcon: ({ color }) => <Ionicons size={28} name="person" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="crud"
+        options={{
+          title: 'Crud',
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons size={28} name="list-status" color={color} />,
         }}
       />
     </Tabs>
