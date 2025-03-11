@@ -50,6 +50,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <MaterialCommunityIcons size={28} name="list-status" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="crud"
+        options={{
+          title: 'Crud',
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons size={28} name="list-status" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }

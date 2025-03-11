@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 
-SQLite.enablePromise(true);
+// SQLite.enablePromise(true);  
+
+type BancoHora = {
+  nome: string;
+  matricula: string;
+  qtdHoras: number;
+  data: string;
+  valorHora: number;
+};
 
 const App = () => {
   const [nome, setNome] = useState('');
@@ -10,7 +18,7 @@ const App = () => {
   const [qtdHoras, setQtdHoras] = useState('');
   const [data, setData] = useState('');
   const [valorHora, setValorHora] = useState('');
-  const [funcionarios, setFuncionarios] = useState([]);
+  const [funcionarios, setFuncionarios] = useState<BancoHora[]>([]);
 
   useEffect(() => {
     const initDB = async () => {
@@ -40,21 +48,25 @@ const App = () => {
       [nome, matricula, qtdHoras, data, valorHora]
     );
     loadFuncionarios();
+    Alert.alert(
+      'Sucesso!', 
+      'Funcionário cadastrado com sucesso!', 
+      [{ text: 'OK', onPress: () => console.log('Usuário clicou em OK') }]
+    );
   };
 
-  const excluir = async (id) => {
+  const excluir = async (id:string) => {
     const db = await SQLite.openDatabase({ name: 'bancoHoras.db', location: 'default' });
     await db.executeSql('DELETE FROM funcionarios WHERE id = ?', [id]);
     loadFuncionarios();
   };
 
-  const editar = (item) => {
+  const editar = (item: BancoHora) => {
     setNome(item.nome);
     setMatricula(item.matricula);
-    setQtdHoras(item.qtdHoras);
+    setQtdHoras(item.qtdHoras.toString());
     setData(item.data);
     setValorHora(item.valorHora.toString());
-    excluir(item.id);
   };
 
   return (
@@ -99,7 +111,7 @@ const App = () => {
 
       <FlatList
         data={funcionarios}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.matricula}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Text style={styles.itemText}>{item.nome}</Text>
@@ -108,7 +120,7 @@ const App = () => {
               <TouchableOpacity onPress={() => editar(item)}>
                 <Text style={styles.edit}>✏️</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => excluir(item.id)}>
+              <TouchableOpacity onPress={() => excluir(item.matricula)}>
                 <Text style={styles.delete}>🗑️</Text>
               </TouchableOpacity>
             </View>
