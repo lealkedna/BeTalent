@@ -22,7 +22,7 @@ const EmployeeScreen: React.FC = () => {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get<{ employees: Employee[] }>(
-          "https://gist.githubusercontent.com/EmilenyRochaLeal/4e22d0ab8a76c9e8774928ce6ac8634d/raw/644b704288a98fdb49adbaf552aceeb44189a7f4/dados.json"
+          "https://gist.githubusercontent.com/EmilenyRochaLeal/4e22d0ab8a76c9e8774928ce6ac8634d/raw/1e2fc8453d16f06c7ead6a7bedc96842249bab46/dados.json"
         );
 
         // console.log("Dados recebidos da API:", response.data); 

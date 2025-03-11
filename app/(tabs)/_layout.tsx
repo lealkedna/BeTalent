@@ -17,7 +17,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'dark'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -41,13 +41,6 @@ export default function TabLayout() {
         options={{
           title: 'Funcionarios',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="person" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="cadastro"
-        options={{
-          title: 'Cadastro',
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons size={28} name="list-status" color={color} />,
         }}
       />
       <Tabs.Screen

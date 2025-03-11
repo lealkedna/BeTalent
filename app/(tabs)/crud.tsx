@@ -30,7 +30,7 @@ const TaskForm = () => {
   };
 
   // Função para salvar os dados no AsyncStorage
-  const saveData = async (name:string, matricula:string, hoursWorked:string, date:string, hourValue:string, totalToPay:number) => {
+  const saveData = async (name: string, matricula: string, hoursWorked: string, date: string, hourValue: string, totalToPay: number) => {
     try {
       const data: Employee = {
         name,
@@ -118,25 +118,28 @@ const TaskForm = () => {
   // Renderizando a lista de dados
   const renderItem = ({ item, index }: { item: Employee, index: number }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.itemText}>{item.name}</Text>
-      <Text style={styles.itemText}>{item.date}</Text>
-      <Text style={styles.itemText}>R${item.totalToPay.toFixed(2)}</Text>
+      <View style={styles.itemTextContainer}>
+        <Text style={styles.itemText}>{item.name}</Text>
+        <Text style={styles.itemText}>R${item.totalToPay.toFixed(2)}</Text>
+      </View>
 
-      <View style={styles.buttonsContainer}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={() => editData(index)} style={styles.button}>
-          <Text style={styles.buttonText}>Editar</Text>
+          <Text style={styles.buttonText}>✏️</Text> {/* Icone de editar */}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => deleteData(index)} style={styles.button}>
-          <Text style={styles.buttonText}>Excluir</Text>
+          <Text style={styles.buttonText}>🗑️</Text> {/* Icone de excluir */}
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.formContainer}>
-      <Text>Nome do Funcionário</Text>
+    <View style={styles.container}>
+      <Text style={styles.text} ><Text style={styles.Be}>Be</Text>Talente</Text>
+      <Text style={styles.textSecudario}>Banco de Horas Extras</Text>
+
       <TextInput
         style={styles.input}
         value={name}
@@ -144,16 +147,23 @@ const TaskForm = () => {
         placeholder="Nome completo"
       />
 
-      <Text>Matrícula</Text>
-      <TextInput
-        style={styles.input}
-        value={matricula}
-        onChangeText={setMatricula}
-        placeholder="Número de matrícula"
-        keyboardType="numeric"
-      />
+      <View style={styles.campos}>
+        <TextInput
+          style={styles.input}
+          value={matricula}
+          onChangeText={setMatricula}
+          placeholder="Matrícula"
+          keyboardType="numeric"
+        />
 
-      <Text>Quantidade de Horas Extras</Text>
+        <TextInput
+          style={styles.input}
+          value={date}
+          onChangeText={setDate}
+          placeholder="Data (dd/mm/aaaa)"
+        />
+      </View>
+
       <TextInput
         style={styles.input}
         value={hoursWorked}
@@ -162,15 +172,10 @@ const TaskForm = () => {
         keyboardType="numeric"
       />
 
-      <Text>Data</Text>
-      <TextInput
-        style={styles.input}
-        value={date}
-        onChangeText={setDate}
-        placeholder="Data (dd/mm/aaaa)"
-      />
+      {/* <Text>Data</Text> */}
 
-      <Text>Valor da Hora</Text>
+
+
       <TextInput
         style={styles.input}
         value={hourValue}
@@ -179,7 +184,13 @@ const TaskForm = () => {
         keyboardType="numeric"
       />
 
-      <Button title="Salvar" onPress={handleSubmit} />
+      {/* <Button title="Salvar" onPress={handleSubmit} /> */}
+
+      <View style={styles.containerButton}>
+        <TouchableOpacity style={styles.salvar} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Salvar</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Exibindo a lista de dados */}
       <FlatList
@@ -192,44 +203,107 @@ const TaskForm = () => {
 };
 
 const styles = StyleSheet.create({
-  formContainer: {
-    backgroundColor: 'white',
-    padding: 20,
+  container: {
+    backgroundColor: '#0000FF',
+    color: '#fff',
+    flex: 1,
+    paddingTop: 50,
+    paddingHorizontal: 20,
+  },
+  text: {
+    textAlign: 'center',
+    fontSize: 40,
+    fontFamily: 'Poppins',
+    color: '#fff',
+    fontWeight: 400,
+  },
+  Be: {
+    color: '#fff',
+    fontSize: 40,
+    fontFamily: 'Poppins',
+    fontWeight: 900,
+  },
+  textSecudario: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 25,
+    fontFamily: 'Poppins',
+    fontWeight: 200,
+
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    height: 50,
+    color: '#fff',
     marginBottom: 15,
     paddingLeft: 10,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 2,
+    borderBottomColor: '#fff',
   },
+
+  containerButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+    paddingBottom: 40,
+  },
+  button: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff', // Cor de fundo para botões
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  salvar: {
+    padding: 15,
+    backgroundColor: '#fff',
+    width: 180,
+    color: 'red',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#0000FF',
+  },
+  campos: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+
+
+
+  // Parte de renderizar os itens
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    marginBottom: 10,
     borderRadius: 5,
+    marginHorizontal: 10
+  },
+  itemTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '70%',
+
   },
   itemText: {
     fontSize: 16,
-    width: '30%',
+    width: '45%',
     textAlign: 'center',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '40%',
-  },
-  button: {
-    padding: 5,
-    backgroundColor: '#4CAF50',
-    borderRadius: 5,
-  },
-  buttonText: {
+    fontWeight: 'bold',
     color: '#fff',
-    fontSize: 14,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 15,
+  },
+
 });
 
 export default TaskForm;
