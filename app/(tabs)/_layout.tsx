@@ -44,9 +44,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="crud"
+        name="cadastro"
         options={{
-          title: 'Crud',
+          title: 'Cadastro',
           tabBarIcon: ({ color }) => <MaterialCommunityIcons size={28} name="list-status" color={color} />,
         }}
       />

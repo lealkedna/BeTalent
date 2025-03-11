@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, FlatList, Image, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons, AntDesign, FontAwesome } from "@expo/vector-icons";
 import axios from "axios";
 
 type Employee = {
@@ -13,9 +13,10 @@ type Employee = {
 };
 
 const EmployeeScreen: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]); // 🔹 Inicializa corretamente como array vazio
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -47,15 +48,33 @@ const EmployeeScreen: React.FC = () => {
     emp.name.toLowerCase().includes(search.toLowerCase())
   ) : []; 
 
+  const toggleExpand = (id: number) => {
+    setExpandedId(expandedId === id ? null : id); 
+  };
+
+  const formatDate = (admission_date: string) => {
+    const date = new Date(admission_date); 
+    return date.toLocaleDateString('pt-BR');
+  };
+
+  const formatPhone = (phone: string) => {
+    const pais = phone.substring(0, 2);
+    const ddd = phone.substring(2, 4)
+    const part1 = phone.substring(4, 9);
+    const part2 = phone.substring(9);
+    return `+${pais} (${ddd}) ${part1}-${part2}`;
+  };
+
   return (
     <View style={styles.container}>
       {/* Cabeçalho */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Funcionários</Text>
-        <Ionicons name="notifications-outline" size={24} color="black" />
+        <FontAwesome name="user-circle" size={30} color="black" />
+        <Ionicons name="notifications-outline" size={30} color="black" />
       </View>
 
       {/* Campo de Pesquisa */}
+        <Text style={styles.headerTitle}>Funcionários</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
         <TextInput
@@ -76,18 +95,34 @@ const EmployeeScreen: React.FC = () => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.employeeItem}>
-              <Image source={{ uri: item.image }} style={styles.employeeImage} />
-              <View style={styles.employeeDetails}>
+              <View style={styles.horizontalContainer}>
+              <View style={styles.imageAndNameContainer}>
+                <Image source={{ uri: item.image }} style={styles.employeeImage} />
                 <Text style={styles.employeeName}>{item.name}</Text>
-                <Text style={styles.employeeJob}>{item.job}</Text>
+               </View>
+                <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+                  <AntDesign
+                    name={expandedId === item.id ? "up" : "down"} 
+                    size={16}
+                    color="gray"
+                  />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity>
-                <AntDesign name="down" size={16} color="gray" />
-              </TouchableOpacity>
+
+              {expandedId === item.id && (
+                <View style={styles.detailsContainer}>
+                  <Text style={styles.detailText}>
+                    <Text style={styles.bold}>Cargo:</Text> {item.job}
+                  </Text>
+                  <Text style={styles.detailText}><Text style={styles.bold}>Data de admissão:</Text> {formatDate(item.admission_date)}</Text>
+                  <Text style={styles.detailText}><Text style={styles.bold}>Telefone:</Text>  {formatPhone(item.phone)}</Text>
+                </View>
+              )}
+
             </View>
           )}
-        />
-      )}
+          />
+        )}
     </View>
   );
 };
@@ -99,12 +134,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
+    paddingTop: 29,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
   headerTitle: {
+    // padding: 20,
     fontSize: 22,
     fontWeight: "bold",
     color: "black",
@@ -127,12 +164,20 @@ const styles = StyleSheet.create({
     color: "black",
   },
   employeeItem: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
   },
+  horizontalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  imageAndNameContainer:{
+    flexDirection: "row", 
+    alignItems: "center", 
+    flex: 1,
+  }, 
   employeeImage: {
     width: 40,
     height: 40,
@@ -150,6 +195,20 @@ const styles = StyleSheet.create({
   employeeJob: {
     fontSize: 14,
     color: "gray",
+  },
+  detailsContainer: {
+    marginTop: 10, 
+    backgroundColor: "#F9F9F9",
+    padding: 10,
+    borderRadius: 8,
+  },
+  detailText: {
+    fontSize: 14,
+    color: "#333",
+    marginVertical: 2,
+  },
+  bold: {
+    fontWeight: "bold",
   },
 });
 
