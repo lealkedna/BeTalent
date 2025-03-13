@@ -56,21 +56,58 @@ const EmployeeScreen: React.FC = () => {
     return 0;
   };
 
-  const saveData = async (employeeId: number, hoursWorked: string, date: string, hourValue: string) => {
-    try {
-      const total = calculateTotal();
-      const data = { employeeId, hoursWorked, date, hourValue, total };
+  // const saveData = async (employeeId: number, hoursWorked: string, date: string, hourValue: string) => {
+  //   try {
+  //     const total = calculateTotal();
+  //     const data = { employeeId, hoursWorked, date, hourValue, total };
 
-      const storedData = await AsyncStorage.getItem("@employee_hours");
-      let parsedData = storedData ? JSON.parse(storedData) : [];
-      parsedData.push(data);
+  //     const storedData = await AsyncStorage.getItem("@employee_hours");
+  //     let parsedData = storedData ? JSON.parse(storedData) : [];
+  //     parsedData.push(data);
 
-      await AsyncStorage.setItem("@employee_hours", JSON.stringify(parsedData));
-      console.log("Dados salvos:", data);
-    } catch (error) {
-      console.log("Erro ao salvar dados:", error);
+  //     await AsyncStorage.setItem("@employee_hours", JSON.stringify(parsedData));
+  //     console.log("Dados salvos:", data);
+  //   } catch (error) {
+  //     console.log("Erro ao salvar dados:", error);
+  //   }
+  // };
+
+
+  const saveData = async (id: number, hoursWorked: string, date: string, hourValue: string) => {
+    if (selectedEmployee && hoursWorked && date && hourValue) {
+      try {
+        const total = parseFloat(hoursWorked) * parseFloat(hourValue);
+        const newData = {
+          name: selectedEmployee.name, 
+          matricula: selectedEmployee.id.toString(),
+          hoursWorked,
+          date,
+          hourValue,
+          totalToPay: total
+        };
+  
+        const storedData = await AsyncStorage.getItem("@employee_data");
+        let parsedData = storedData ? JSON.parse(storedData) : [];
+        parsedData.push(newData);
+  
+        await AsyncStorage.setItem("@employee_data", JSON.stringify(parsedData));
+  
+        console.log("Dados salvos:", newData);
+  
+    
+        setTimeout(() => {
+          setHoursWorked("");
+          setDate("");
+          setHourValue("");
+        }, 500);
+      } catch (error) {
+        console.log("Erro ao salvar dados:", error);
+      }
+    } else {
+      console.log("Preencha todos os campos!");
     }
   };
+  
 
   const handleSubmit = () => {
     if (selectedEmployee && hoursWorked && date && hourValue) {

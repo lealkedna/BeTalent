@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, Alert } from "react-native";
+//import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function AcaoModal({ 
   handleClose, 
@@ -11,6 +12,12 @@ export function AcaoModal({
   hourValue, 
   setHourValue 
 }) {
+
+  const handleSave = () => {
+    handleSubmit();
+    Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={{ flex: 1, zIndex: 9 }} onPress={handleClose}></TouchableOpacity>
@@ -40,7 +47,7 @@ export function AcaoModal({
           placeholder="Valor da hora do funcionário"
         />
 
-        <TouchableOpacity style={styles.salvar} onPress={handleSubmit}>
+        <TouchableOpacity style={styles.salvar} onPress={handleSave}>
           <Text style={styles.buttonText}>Salvar</Text>
         </TouchableOpacity>
       </View>
