@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Definindo a interface para os dados do funcionário
 interface Employee {
   name: string;
   matricula: string;
@@ -29,7 +30,6 @@ const TaskForm = () => {
     return 0;
   };
 
-  // Função para salvar os dados no AsyncStorage
   const saveData = async (name: string, matricula: string, hoursWorked: string, date: string, hourValue: string, totalToPay: number) => {
     try {
       const data: Employee = {
@@ -70,16 +70,16 @@ const TaskForm = () => {
     try {
       const storedData = await AsyncStorage.getItem('@employee_data');
       let parsedData: Employee[] = storedData ? JSON.parse(storedData) : [];
-      parsedData.splice(index, 1); // Remove o item
+      parsedData.splice(index, 1); 
 
       await AsyncStorage.setItem('@employee_data', JSON.stringify(parsedData));
-      setDataList(parsedData); // Atualiza a lista na tela
+      setDataList(parsedData); 
     } catch (error) {
       console.log('Erro ao excluir dados:', error);
     }
   };
 
-  // Função para editar um item (exemplo simples: apenas reatualizar com novos dados)
+  // Função para editar um item 
   const editData = (index: number) => {
     const itemToEdit = dataList[index];
     setName(itemToEdit.name);
@@ -88,19 +88,18 @@ const TaskForm = () => {
     setDate(itemToEdit.date);
     setHourValue(itemToEdit.hourValue);
     setTotalToPay(itemToEdit.totalToPay);
-    deleteData(index); // Exclui o item para substituir com os novos dados
+    deleteData(index); 
   };
 
   // Função para enviar os dados
   const handleSubmit = () => {
     if (name && matricula && hoursWorked && date && hourValue) {
       const total = calculateTotal();
-      setTotalToPay(total); // Atualiza o total a pagar
+      setTotalToPay(total); 
 
-      // Salva os dados no AsyncStorage
       saveData(name, matricula, hoursWorked, date, hourValue, total);
 
-      // Resetando os campos após o envio
+
       setName('');
       setMatricula('');
       setHoursWorked('');
@@ -112,7 +111,7 @@ const TaskForm = () => {
   };
 
   useEffect(() => {
-    getData(); // Recupera os dados salvos ao carregar o componente
+    getData(); 
   }, []);
 
   // Renderizando a lista de dados
@@ -125,19 +124,22 @@ const TaskForm = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={() => editData(index)} style={styles.button}>
-          <Text style={styles.buttonText}>✏️</Text> {/* Icone de editar */}
+          <Text style={styles.buttonText}><Feather name="edit" size={24} color="black" /></Text> {/* Icone de editar */}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => deleteData(index)} style={styles.button}>
-          <Text style={styles.buttonText}>🗑️</Text> {/* Icone de excluir */}
+          <Text style={styles.buttonText}><AntDesign name="delete" size={24} color="black" /></Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text} ><Text style={styles.Be}>Be</Text>Talente</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.textoPrimario}>
+        <Text style={styles.Be}>Be</Text>
+        <Text style={styles.text} >Talent</Text>
+      </View>
       <Text style={styles.textSecudario}>Banco de Horas Extras</Text>
 
       <TextInput
@@ -172,10 +174,6 @@ const TaskForm = () => {
         keyboardType="numeric"
       />
 
-      {/* <Text>Data</Text> */}
-
-
-
       <TextInput
         style={styles.input}
         value={hourValue}
@@ -183,8 +181,6 @@ const TaskForm = () => {
         placeholder="Valor da hora do funcionário"
         keyboardType="numeric"
       />
-
-      {/* <Button title="Salvar" onPress={handleSubmit} /> */}
 
       <View style={styles.containerButton}>
         <TouchableOpacity style={styles.salvar} onPress={handleSubmit}>
@@ -198,33 +194,39 @@ const TaskForm = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
       />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  
   container: {
-    backgroundColor: '#0000FF',
-    color: '#fff',
+    backgroundColor: '#fff',
+    color: '#000',
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 20,
   },
+  textoPrimario:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    textAlign:'center',
+  }, 
   text: {
     textAlign: 'center',
     fontSize: 40,
     fontFamily: 'Poppins',
-    color: '#fff',
+    color: '#000',
     fontWeight: 400,
   },
   Be: {
-    color: '#fff',
+    color: '#000',
     fontSize: 40,
     fontFamily: 'Poppins',
     fontWeight: 900,
   },
   textSecudario: {
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
     fontSize: 25,
     fontFamily: 'Poppins',
@@ -233,14 +235,14 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    color: '#fff',
+    color: '#000',
     marginBottom: 15,
     paddingLeft: 10,
     borderTopWidth: 0,
     borderLeftWidth: 0,
     borderRightWidth: 0,
     borderBottomWidth: 2,
-    borderBottomColor: '#fff',
+    borderBottomColor: '#000',
   },
 
   containerButton: {
@@ -250,30 +252,21 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 40,
   },
-  button: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff', // Cor de fundo para botões
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   salvar: {
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#0000FF',
     width: 180,
     color: 'red',
     borderRadius: 8,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#0000FF',
+    color: '#fff',
   },
   campos: {
     flexDirection: 'row',
     gap: 15,
   },
-
 
 
   // Parte de renderizar os itens
@@ -289,19 +282,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '70%',
-
   },
   itemText: {
     fontSize: 16,
     width: '45%',
     textAlign: 'center',
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 15,
+  },
+  button: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff', 
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
 });
