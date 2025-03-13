@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, FlatList, Image, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Ionicons, AntDesign, FontAwesome } from "@expo/vector-icons";
+import { View, Text, StyleSheet, TextInput, FlatList, Image, TouchableOpacity, ActivityIndicator, Modal } from "react-native";
+import { Ionicons, AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
+import AcaoModal from "@/components/AcaoModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Employee = {
   id: number;
@@ -14,9 +16,14 @@ type Employee = {
 
 const EmployeeScreen: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [visibleModal, setVisibleModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [date, setDate] = useState("");
+  const [hoursWorked, setHoursWorked] = useState("");
+  const [hourValue, setHourValue] = useState("");
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -25,17 +32,15 @@ const EmployeeScreen: React.FC = () => {
           "https://gist.githubusercontent.com/EmilenyRochaLeal/4e22d0ab8a76c9e8774928ce6ac8634d/raw/1e2fc8453d16f06c7ead6a7bedc96842249bab46/dados.json"
         );
 
-        // console.log("Dados recebidos da API:", response.data); 
-
         if (response.data && Array.isArray(response.data.employees)) {
           setEmployees(response.data.employees);
         } else {
           console.error("Erro: A API não retornou um array válido dentro de 'employees'.");
-          setEmployees([]); 
+          setEmployees([]);
         }
       } catch (error) {
         console.error("Erro ao buscar os funcionários:", error);
-        setEmployees([]); 
+        setEmployees([]);
       } finally {
         setLoading(false);
       }
@@ -44,37 +49,45 @@ const EmployeeScreen: React.FC = () => {
     fetchEmployees();
   }, []);
 
-  const filteredEmployees = employees ? employees.filter((emp) =>
-    emp.name.toLowerCase().includes(search.toLowerCase())
-  ) : []; 
-
-  const toggleExpand = (id: number) => {
-    setExpandedId(expandedId === id ? null : id); 
+  const calculateTotal = () => {
+    if (hoursWorked && hourValue) {
+      return parseFloat(hoursWorked) * parseFloat(hourValue);
+    }
+    return 0;
   };
 
-  const formatDate = (admission_date: string) => {
-    const date = new Date(admission_date); 
-    return date.toLocaleDateString('pt-BR');
+  const saveData = async (employeeId: number, hoursWorked: string, date: string, hourValue: string) => {
+    try {
+      const total = calculateTotal();
+      const data = { employeeId, hoursWorked, date, hourValue, total };
+
+      const storedData = await AsyncStorage.getItem("@employee_hours");
+      let parsedData = storedData ? JSON.parse(storedData) : [];
+      parsedData.push(data);
+
+      await AsyncStorage.setItem("@employee_hours", JSON.stringify(parsedData));
+      console.log("Dados salvos:", data);
+    } catch (error) {
+      console.log("Erro ao salvar dados:", error);
+    }
   };
 
-  const formatPhone = (phone: string) => {
-    const pais = phone.substring(0, 2);
-    const ddd = phone.substring(2, 4)
-    const part1 = phone.substring(4, 9);
-    const part2 = phone.substring(9);
-    return `+${pais} (${ddd}) ${part1}-${part2}`;
+  const handleSubmit = () => {
+    if (selectedEmployee && hoursWorked && date && hourValue) {
+      saveData(selectedEmployee.id, hoursWorked, date, hourValue);
+
+      setHoursWorked("");
+      setDate("");
+      setHourValue("");
+      setVisibleModal(false);
+    } else {
+      console.log("Preencha todos os campos!");
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <FontAwesome name="user-circle" size={30} color="black" />
-        <Ionicons name="notifications-outline" size={30} color="black" />
-      </View>
-
-      {/* Campo de Pesquisa */}
-        <Text style={styles.headerTitle}>Funcionários</Text>
+      <Text style={styles.headerTitle}>Funcionários</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
         <TextInput
@@ -86,46 +99,46 @@ const EmployeeScreen: React.FC = () => {
         />
       </View>
 
-      {/* Exibe um indicador de carregamento enquanto busca os dados */}
       {loading ? (
         <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
-          data={filteredEmployees}
+          data={employees.filter(emp => emp.name.toLowerCase().includes(search.toLowerCase()))}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.employeeItem}>
               <View style={styles.horizontalContainer}>
-              <View style={styles.imageAndNameContainer}>
                 <Image source={{ uri: item.image }} style={styles.employeeImage} />
                 <Text style={styles.employeeName}>{item.name}</Text>
-               </View>
-                <TouchableOpacity onPress={() => toggleExpand(item.id)}>
-                  <AntDesign
-                    name={expandedId === item.id ? "up" : "down"} 
-                    size={16}
-                    color="gray"
-                  />
+                <TouchableOpacity style={styles.button} onPress={() => {
+                  setSelectedEmployee(item);
+                  setVisibleModal(true);
+                }}>
+                  <MaterialIcons name="more-time" size={24} color="gray" />
                 </TouchableOpacity>
               </View>
-
-              {expandedId === item.id && (
-                <View style={styles.detailsContainer}>
-                  <Text style={styles.detailText}>
-                    <Text style={styles.bold}>Cargo:</Text> {item.job}
-                  </Text>
-                  <Text style={styles.detailText}><Text style={styles.bold}>Data de admissão:</Text> {formatDate(item.admission_date)}</Text>
-                  <Text style={styles.detailText}><Text style={styles.bold}>Telefone:</Text>  {formatPhone(item.phone)}</Text>
-                </View>
-              )}
-
             </View>
           )}
-          />
-        )}
+        />
+      )}
+
+      <Modal visible={visibleModal} transparent={true} onRequestClose={() => setVisibleModal(false)} animationType="slide">
+        <AcaoModal
+          handleClose={() => setVisibleModal(false)}
+          handleSubmit={handleSubmit}
+          hoursWorked={hoursWorked}
+          setHoursWorked={setHoursWorked}
+          date={date}
+          setDate={setDate}
+          hourValue={hourValue}
+          setHourValue={setHourValue}
+        />
+      </Modal>
     </View>
   );
 };
+
+export default EmployeeScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -210,6 +223,7 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "bold",
   },
+  button:{
+    backgroundColor: 'black'
+  }
 });
-
-export default EmployeeScreen;
