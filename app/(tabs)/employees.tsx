@@ -55,23 +55,22 @@ const EmployeeScreen: React.FC = () => {
     }
     return 0;
   };
+  const toggleExpand = (id: number) => {
+    setExpandedId(expandedId === id ? null : id); 
+  };
 
-  // const saveData = async (employeeId: number, hoursWorked: string, date: string, hourValue: string) => {
-  //   try {
-  //     const total = calculateTotal();
-  //     const data = { employeeId, hoursWorked, date, hourValue, total };
+  const formatDate = (admission_date: string) => {
+    const date = new Date(admission_date); 
+    return date.toLocaleDateString('pt-BR');
+  };
 
-  //     const storedData = await AsyncStorage.getItem("@employee_hours");
-  //     let parsedData = storedData ? JSON.parse(storedData) : [];
-  //     parsedData.push(data);
-
-  //     await AsyncStorage.setItem("@employee_hours", JSON.stringify(parsedData));
-  //     console.log("Dados salvos:", data);
-  //   } catch (error) {
-  //     console.log("Erro ao salvar dados:", error);
-  //   }
-  // };
-
+  const formatPhone = (phone: string) => {
+    const pais = phone.substring(0, 2);
+    const ddd = phone.substring(2, 4)
+    const part1 = phone.substring(4, 9);
+    const part2 = phone.substring(9);
+    return `+${pais} (${ddd}) ${part1}-${part2}`;
+  };
 
   const saveData = async (id: number, hoursWorked: string, date: string, hourValue: string) => {
     if (selectedEmployee && hoursWorked && date && hourValue) {
@@ -124,6 +123,10 @@ const EmployeeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+       <View style={styles.header}>
+        <FontAwesome name="user-circle" size={30} color="black" />
+        <Ionicons name="notifications-outline" size={30} color="black" />
+      </View>
       <Text style={styles.headerTitle}>Funcionários</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
@@ -140,24 +143,53 @@ const EmployeeScreen: React.FC = () => {
         <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
-          data={employees.filter(emp => emp.name.toLowerCase().includes(search.toLowerCase()))}
+          data={employees.filter((emp) => emp.name.toLowerCase().includes(search.toLowerCase()))}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.employeeItem}>
               <View style={styles.horizontalContainer}>
-                <Image source={{ uri: item.image }} style={styles.employeeImage} />
-                <Text style={styles.employeeName}>{item.name}</Text>
-                <TouchableOpacity style={styles.button} onPress={() => {
-                  setSelectedEmployee(item);
-                  setVisibleModal(true);
-                }}>
+                <View style={styles.imageAndNameContainer}>
+                  <Image source={{ uri: item.image }} style={styles.employeeImage} />
+                  <Text style={styles.employeeName}>{item.name}</Text>
+                </View>
+
+                {/* Botão para adicionar horas extras */}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    setSelectedEmployee(item);
+                    setVisibleModal(true);
+                  }}
+                >
                   <MaterialIcons name="more-time" size={24} color="gray" />
                 </TouchableOpacity>
+
+                {/* Botão de expandir detalhes */}
+                <TouchableOpacity style={styles.button} onPress={() => toggleExpand(item.id)}>
+                  <AntDesign name={expandedId === item.id ? "up" : "down"} size={16} color="gray" />
+                </TouchableOpacity>
               </View>
+
+              {/* Exibir detalhes apenas se o funcionário estiver expandido */}
+              {expandedId === item.id && (
+                <View style={styles.detailsContainer}>
+                  <Text style={styles.detailText}>
+                    <Text style={styles.bold}>Cargo:</Text> {item.job}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    <Text style={styles.bold}>Data de admissão:</Text> {formatDate(item.admission_date)}
+                  </Text>
+                  <Text style={styles.detailText}>
+                    <Text style={styles.bold}>Telefone:</Text> {formatPhone(item.phone)}
+                  </Text>
+                </View>
+              )}
             </View>
           )}
         />
       )}
+
+      
 
       <Modal visible={visibleModal} transparent={true} onRequestClose={() => setVisibleModal(false)} animationType="slide">
         <AcaoModal
@@ -176,6 +208,8 @@ const EmployeeScreen: React.FC = () => {
 };
 
 export default EmployeeScreen;
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -261,6 +295,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button:{
-    backgroundColor: 'black'
+    padding: 10
   }
 });

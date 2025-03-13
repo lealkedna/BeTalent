@@ -56,48 +56,47 @@ export function AcaoModal({
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    }, 
-    content: {
-        backgroundColor: '#DFDFDF',
-        marginVertical: 20,
-        marginLeft: 10,
-        marginRight: 10
-    }, 
-    textSecudario: {
-        color: '#201E1E',
-        textAlign: 'center',
-        fontSize: 25,
-        fontFamily: 'Helvetica',
-        fontWeight: 200,
-    },
-    input: {
-        height: 50,
-        color: '#000',
-        marginBottom: 15,
-        paddingLeft: 10,
-        borderTopWidth: 0,
-        borderLeftWidth: 0,
-        borderRightWidth: 0,
-        borderBottomWidth: 2,
-        borderBottomColor: '#000',
-        borderRadius: 6,
-        marginTop: 8,
-        padding: 8,
-      },
-    salvar: {
-        zIndex: 99,
-        backgroundColor: '#0000FF',
-        borderRadius: 6,
-        marginTop: 8,
-        padding: 8,
-        width: 180,
-        alignItems: 'center',
-      },
-      buttonText: {
-        color: '#fff',
-      },
-})
+  container: {
+    flex: 1,
+  },
+  content: {
+    backgroundColor: "#DFDFDF",
+    marginVertical: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    padding: 20,
+    // borderRadius: 10,
+  },
+  textSecundario: {
+    color: '#201E1E',
+    textAlign: 'center',
+    fontSize: 25,
+    fontFamily: 'Helvetica',
+    fontWeight: 200,
+  },
+  input: {
+    height: 50,
+    color: '#000',
+    marginBottom: 15,
+    paddingLeft: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    borderRadius: 6,
+    marginTop: 8,
+    padding: 8,
+  },
+  salvar: {
+    zIndex: 99,
+    backgroundColor: '#0000FF',
+    borderRadius: 6,
+    marginTop: 8,
+    padding: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+});
 
 export default AcaoModal;
